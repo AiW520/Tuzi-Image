@@ -6,7 +6,14 @@ import test from "node:test";
 test("MCP stdio 使用 NDJSON 并提供三个工具", async (context) => {
   const child = spawn(process.execPath, ["plugins/tuzi-image/server/index.mjs"], {
     cwd: process.cwd(),
-    env: { ...process.env, TUZI_IMAGE_DISABLE_DPAPI: "1", TUZI_IMAGE_CONFIG_DIR: `${process.env.TEMP}\\tuzi-mcp-nonexistent-${process.pid}` },
+    env: {
+      ...process.env,
+      TUZI_IMAGE_DISABLE_CODEX_AUTH: "1",
+      TUZI_IMAGE_DISABLE_DPAPI: "1",
+      TUZI_IMAGE_CONFIG_DIR: `${process.env.TEMP}\\tuzi-mcp-nonexistent-${process.pid}`,
+      TUZI_CODING_API_KEY: "",
+      TUZI_API_KEY: "",
+    },
     stdio: ["pipe", "pipe", "pipe"],
     windowsHide: true,
   });

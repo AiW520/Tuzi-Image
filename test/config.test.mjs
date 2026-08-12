@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -14,6 +14,32 @@ test("配置只保存通道，不落盘密钥", async () => {
     const raw = await readFile(path.join(root, "config.json"), "utf8");
     assert.equal(raw.includes("secret-value"), false);
     assert.equal((await loadConfig(env)).baseUrl, "https://api.tu-zi.com/v1");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("存在 Codex OPENAI_API_KEY 时默认选择 coding 通道", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "tuzi-config-"));
+  try {
+    await writeFile(path.join(root, "auth.json"), JSON.stringify({ OPENAI_API_KEY: "codex-plan-key" }), "utf8");
+    const config = await loadConfig({ CODEX_HOME: root, TUZI_IMAGE_CONFIG_DIR: root, TUZI_IMAGE_DISABLE_DPAPI: "1" });
+    assert.equal(config.channel, "coding");
+    assert.equal(config.apiKey, "codex-plan-key");
+    assert.equal(config.baseUrl, "https://api.tu-zi.com/coding");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("显式 api 通道不会复用 Codex 套餐 Key", async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "tuzi-config-"));
+  try {
+    await writeFile(path.join(root, "auth.json"), JSON.stringify({ OPENAI_API_KEY: "codex-plan-key" }), "utf8");
+    const config = await loadConfig({ CODEX_HOME: root, TUZI_IMAGE_CONFIG_DIR: root, TUZI_IMAGE_CHANNEL: "api", TUZI_IMAGE_DISABLE_DPAPI: "1" });
+    assert.equal(config.channel, "api");
+    assert.equal(config.apiKey, null);
+    assert.equal(config.baseUrl, "https://api.tu-zi.com/v1");
   } finally {
     await rm(root, { recursive: true, force: true });
   }

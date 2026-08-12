@@ -29,9 +29,10 @@ export async function loadConfig(env = process.env) {
     if (error?.code !== "ENOENT") throw new Error("Tuzi Image 配置文件无效");
   }
 
-  const channel = env.TUZI_IMAGE_CHANNEL || stored.channel || null;
+  const codexAuthKey = await loadCodexAuthKey(env);
+  const channel = env.TUZI_IMAGE_CHANNEL || stored.channel || (codexAuthKey ? "coding" : null);
   if (channel && !CHANNELS[channel]) throw new Error(`未知通道: ${channel}`);
-  const apiKey = channel ? env[CHANNELS[channel].envKey] || await loadWindowsCredential(channel, env) : null;
+  const apiKey = channel ? env[CHANNELS[channel].envKey] || await loadWindowsCredential(channel, env) || (channel === "coding" ? codexAuthKey : null) : null;
   return {
     channel,
     apiKey,
@@ -40,6 +41,20 @@ export async function loadConfig(env = process.env) {
     timeoutMs: parseInteger(env.TUZI_IMAGE_TIMEOUT_MS, 180_000, 10_000, 600_000),
     maxBytes: parseInteger(env.TUZI_IMAGE_MAX_BYTES, 50 * 1024 * 1024, 1024, 100 * 1024 * 1024),
   };
+}
+
+async function loadCodexAuthKey(env) {
+  if (env.TUZI_IMAGE_DISABLE_CODEX_AUTH === "1") return null;
+  const configuredHome = env.CODEX_HOME?.trim();
+  const authPath = path.join(configuredHome ? path.resolve(configuredHome) : path.join(os.homedir(), ".codex"), "auth.json");
+  try {
+    const info = await stat(authPath);
+    if (!info.isFile() || info.size > 64 * 1024) return null;
+    const payload = JSON.parse(await readFile(authPath, "utf8"));
+    const value = typeof payload?.OPENAI_API_KEY === "string" ? payload.OPENAI_API_KEY.trim() : "";
+    if (!value || /\s/.test(value) || value.length > 4096) return null;
+    return value.replace(/^Bearer\s+/i, "").trim() || null;
+  } catch { return null; }
 }
 
 export async function saveConfig(update, env = process.env) {

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Tuzi Image Generation"
+  short_description: "Default image generation with Tuzi gpt-image-2"
+  default_prompt: "Use $tuzi-image-generation to generate this image with Tuzi gpt-image-2 and save it locally."
+
+policy:
+  allow_implicit_invocation: true

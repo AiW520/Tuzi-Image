@@ -1,11 +1,11 @@
 {
   "name": "tuzi-image-codex-marketplace",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test",
-    "check": "node --check plugins/tuzi-image/server/index.mjs && node --test"
+    "test": "node --test && python -m unittest discover -s test -p \"test_*.py\"",
+    "check": "node --check plugins/tuzi-image/server/index.mjs && python -m py_compile skills/tuzi-image-generation/scripts/generate_image.py && npm test"
   },
   "engines": {
     "node": ">=20"

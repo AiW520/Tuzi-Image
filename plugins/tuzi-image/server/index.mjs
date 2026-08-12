@@ -55,7 +55,7 @@ async function callTool(name, args) {
     const config = await saveConfig({ channel: args.channel, outputDir: args.output_dir });
     runtimeConfig = config;
     const envKey = CHANNELS[config.channel].envKey;
-    return textResult(`已选择 ${config.channel} 通道。${config.apiKey ? "凭据已就绪。" : `尚未找到凭据。Windows 请运行 Plugin 的 scripts/configure-windows.ps1；其他系统请设置 ${envKey}，然后重启 Codex。`}`);
+    return textResult(`已选择 ${config.channel} 通道。${config.apiKey ? "凭据已就绪。" : `尚未找到凭据。coding 通道也可读取 Codex auth.json；否则请运行 configure-windows.ps1 或设置 ${envKey}，然后重启 Codex。`}`);
   }
   if (name === "tuzi_generate_image") {
     const result = await generateImage(args, runtimeConfig);

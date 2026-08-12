@@ -10,3 +10,5 @@ work/
 !.env.example
 .tuzi-image/
 *.dpapi
+__pycache__/
+*.py[cod]
