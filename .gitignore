@@ -1,0 +1,12 @@
+node_modules/
+coverage/
+.DS_Store
+Thumbs.db
+*.log
+outputs/
+work/
+.env
+.env.*
+!.env.example
+.tuzi-image/
+*.dpapi

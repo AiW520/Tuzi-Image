@@ -1,0 +1,13 @@
+{
+  "name": "tuzi-image-codex-marketplace",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check plugins/tuzi-image/server/index.mjs && node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

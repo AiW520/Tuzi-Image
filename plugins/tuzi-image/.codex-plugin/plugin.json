@@ -1,0 +1,36 @@
+{
+  "name": "tuzi-image",
+  "version": "1.0.0",
+  "description": "Generate images with gpt-image-2 through Tuzi coding-plan or API billing channels.",
+  "author": {
+    "name": "Tuzi"
+  },
+  "homepage": "https://api.tu-zi.com/",
+  "license": "MIT",
+  "keywords": [
+    "image-generation",
+    "gpt-image-2",
+    "tuzi",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Tuzi Image",
+    "shortDescription": "Generate images through Tuzi",
+    "longDescription": "Generate raster images with gpt-image-2 using either a Codex coding-plan credential or an API-site credential. Images are downloaded to local files with bounded streaming and retry controls.",
+    "developerName": "Tuzi",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Write"
+    ],
+    "websiteURL": "https://api.tu-zi.com/",
+    "defaultPrompt": [
+      "Use Tuzi Image to generate a polished product image",
+      "Configure my Tuzi image channel",
+      "Check whether Tuzi Image is ready"
+    ],
+    "brandColor": "#E5484D",
+    "screenshots": []
+  }
+}

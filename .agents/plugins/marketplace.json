@@ -1,0 +1,20 @@
+{
+  "name": "tuzi",
+  "interface": {
+    "displayName": "Tuzi"
+  },
+  "plugins": [
+    {
+      "name": "tuzi-image",
+      "source": {
+        "source": "local",
+        "path": "./plugins/tuzi-image"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

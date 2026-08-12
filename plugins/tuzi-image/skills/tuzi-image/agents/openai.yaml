@@ -1,0 +1,13 @@
+interface:
+  display_name: "Tuzi Image"
+  short_description: "Generate images through Tuzi"
+  default_prompt: "Use $tuzi-image to generate a polished raster image."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "tuzi-image"
+      description: "Tuzi gpt-image-2 generation tools"
+
+policy:
+  allow_implicit_invocation: true
