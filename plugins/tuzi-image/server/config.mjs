@@ -29,7 +29,7 @@ export async function loadConfig(env = process.env) {
     if (error?.code !== "ENOENT") throw new Error("Tuzi Image 配置文件无效");
   }
 
-  const codexAuthKey = await loadCodexAuthKey(env);
+  const codexAuthKey = env.OPENAI_API_KEY || await loadCodexAuthKey(env);
   const channel = env.TUZI_IMAGE_CHANNEL || stored.channel || (codexAuthKey ? "coding" : null);
   if (channel && !CHANNELS[channel]) throw new Error(`未知通道: ${channel}`);
   const apiKey = channel ? env[CHANNELS[channel].envKey] || await loadWindowsCredential(channel, env) || (channel === "coding" ? codexAuthKey : null) : null;
@@ -51,6 +51,8 @@ async function loadCodexAuthKey(env) {
     const info = await stat(authPath);
     if (!info.isFile() || info.size > 64 * 1024) return null;
     const payload = JSON.parse(await readFile(authPath, "utf8"));
+    const authMode = typeof payload?.auth_mode === "string" ? payload.auth_mode.trim().toLowerCase() : "";
+    if (authMode && authMode !== "apikey") return null;
     const value = typeof payload?.OPENAI_API_KEY === "string" ? payload.OPENAI_API_KEY.trim() : "";
     if (!value || /\s/.test(value) || value.length > 4096) return null;
     return value.replace(/^Bearer\s+/i, "").trim() || null;

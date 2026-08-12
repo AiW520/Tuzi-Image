@@ -44,11 +44,26 @@ class GenerateImageTests(unittest.TestCase):
 
     def test_coding_reads_top_level_codex_key(self):
         with tempfile.TemporaryDirectory() as root:
-            pathlib.Path(root, "auth.json").write_text(json.dumps({"OPENAI_API_KEY": "coding-key", "tokens": {"access_token": "ignored"}}), encoding="utf-8")
+            pathlib.Path(root, "auth.json").write_text(json.dumps({"auth_mode": "apikey", "OPENAI_API_KEY": "coding-key", "tokens": {"access_token": "ignored"}}), encoding="utf-8")
             with mock.patch.dict(os.environ, {"CODEX_HOME": root}, clear=True):
                 key, source = MODULE.load_credential("coding")
         self.assertEqual(key, "coding-key")
         self.assertEqual(source, "codex-auth")
+
+    def test_oauth_session_is_not_treated_as_api_key(self):
+        with tempfile.TemporaryDirectory() as root:
+            pathlib.Path(root, "auth.json").write_text(json.dumps({"auth_mode": "chatgpt", "OPENAI_API_KEY": "session-token"}), encoding="utf-8")
+            with mock.patch.dict(os.environ, {"CODEX_HOME": root}, clear=True):
+                with self.assertRaises(MODULE.SkillError):
+                    MODULE.load_credential("coding")
+
+    def test_process_api_key_has_precedence(self):
+        with tempfile.TemporaryDirectory() as root:
+            pathlib.Path(root, "auth.json").write_text(json.dumps({"auth_mode": "apikey", "OPENAI_API_KEY": "stored-key"}), encoding="utf-8")
+            with mock.patch.dict(os.environ, {"CODEX_HOME": root, "OPENAI_API_KEY": "current-key"}, clear=True):
+                key, source = MODULE.load_credential("coding")
+        self.assertEqual(key, "current-key")
+        self.assertEqual(source, "process-OPENAI_API_KEY")
 
     def test_api_channel_never_reuses_codex_key(self):
         with tempfile.TemporaryDirectory() as root:

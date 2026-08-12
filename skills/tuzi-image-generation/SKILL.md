@@ -6,7 +6,7 @@ description: Generate and save raster images with Tuzi's fixed gpt-image-2 model
 # Tuzi Image Generation
 
 1. Resolve this Skill's directory and run its bundled `scripts/generate_image.py` by absolute path. Do not call MCP or Codex's built-in `image_gen`.
-2. Default to the `coding` channel. It reads only the top-level `OPENAI_API_KEY` from the current user's Codex `auth.json`, unless `TUZI_CODING_API_KEY` is explicitly set.
+2. Default to the `coding` channel. Credential precedence is explicit `TUZI_CODING_API_KEY`, then the current process `OPENAI_API_KEY`, then Codex `auth.json` only when `auth_mode` is explicitly `apikey`. Never treat an OAuth/session token as a Tuzi API Key.
 3. Use the `api` channel only when the user explicitly selects API-site balance. It requires `TUZI_API_KEY`. Never switch channels after an error.
 4. Never request or accept a Key in chat. Never print, log, copy, or rewrite a Key.
 5. Preserve the user's prompt, required text, dimensions, and exclusions. Do not invent product claims, prices, logos, or contact details.

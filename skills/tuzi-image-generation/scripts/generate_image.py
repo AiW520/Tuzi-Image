@@ -62,15 +62,20 @@ def normalize_key(value: Any) -> str:
     return key
 
 
-def load_codex_key() -> tuple[str, pathlib.Path]:
+def load_codex_key() -> tuple[str, pathlib.Path, str]:
     auth_path = codex_home() / "auth.json"
     try:
         if not auth_path.is_file() or auth_path.stat().st_size > MAX_AUTH_BYTES:
-            return "", auth_path
+            return "", auth_path, "missing"
         payload = json.loads(auth_path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError):
-        return "", auth_path
-    return normalize_key(payload.get("OPENAI_API_KEY") if isinstance(payload, dict) else None), auth_path
+        return "", auth_path, "invalid"
+    if not isinstance(payload, dict):
+        return "", auth_path, "invalid"
+    auth_mode = str(payload.get("auth_mode") or "").strip().lower()
+    if auth_mode and auth_mode != "apikey":
+        return "", auth_path, auth_mode
+    return normalize_key(payload.get("OPENAI_API_KEY")), auth_path, "apikey"
 
 
 def load_credential(channel: str) -> tuple[str, str]:
@@ -79,10 +84,15 @@ def load_credential(channel: str) -> tuple[str, str]:
     if environment_key:
         return environment_key, env_name
     if channel == "coding":
-        codex_key, auth_path = load_codex_key()
+        process_key = normalize_key(os.getenv("OPENAI_API_KEY"))
+        if process_key:
+            return process_key, "process-OPENAI_API_KEY"
+        codex_key, _, auth_mode = load_codex_key()
         if codex_key:
             return codex_key, "codex-auth"
-        raise SkillError(f"No coding credential found in {env_name} or Codex auth.json.", 2)
+        if auth_mode not in {"missing", "invalid", "apikey"}:
+            raise SkillError("Codex is using a session credential that cannot be exported as a Tuzi API Key. Set TUZI_CODING_API_KEY explicitly.", 2)
+        raise SkillError(f"No coding credential found in {env_name}, OPENAI_API_KEY, or Codex auth.json.", 2)
     raise SkillError(f"No API-site credential found in {env_name}.", 2)
 
 

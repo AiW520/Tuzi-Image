@@ -4,7 +4,7 @@
 
 | 通道 | 默认行为 | 固定接口 |
 | --- | --- | --- |
-| `coding` | 默认；自动读取 Codex `auth.json` 顶层 `OPENAI_API_KEY` | `https://api.tu-zi.com/coding/images/generations` |
+| `coding` | 默认；优先使用显式 `TUZI_CODING_API_KEY`，其次当前进程 `OPENAI_API_KEY`，再读取 `auth.json` 中 `auth_mode=apikey` 的 Key | `https://api.tu-zi.com/coding/images/generations` |
 | `api` | 仅在用户明确选择 API 站余额时使用 `TUZI_API_KEY` | `https://api.tu-zi.com/v1/images/generations` |
 
 两个通道完全隔离，失败后不会自动切换，避免误扣另一账户余额。
@@ -34,7 +34,7 @@ powershell -ExecutionPolicy Bypass -File .\install-skill.ps1
 
 ## 使用
 
-Codex 订阅套餐无需再次输入 Key，重启后直接说：
+如果当前 Codex 暴露的是可兼容的 API Key，订阅套餐无需再次输入 Key，重启后直接说：
 
 ```text
 生成一张 1536x1024 的赛博朋克城市夜景，high 质量
@@ -47,6 +47,8 @@ Codex 订阅套餐无需再次输入 Key，重启后直接说：
 ```
 
 默认保存到当前项目的 `outputs/tuzi-image/`。生成请求只发送一次；即使超时也不会自动重试。
+
+注意：如果 Codex 使用 OAuth/订阅会话令牌，Skill 无法安全导出它作为 Tuzi API Key；这时请显式设置 `TUZI_CODING_API_KEY`。Skill 不会猜测或转发内部会话令牌。
 
 ## API 站余额
 
