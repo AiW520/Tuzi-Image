@@ -1,6 +1,6 @@
 {
   "name": "tuzi-image",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generate images with gpt-image-2 through Tuzi coding-plan or API billing channels.",
   "author": {
     "name": "Tuzi"

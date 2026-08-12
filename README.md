@@ -35,6 +35,8 @@ codex plugin add tuzi-image@tuzi
 
 脚本会隐藏输入，并使用当前 Windows 用户的 DPAPI 加密 Key。先让 PowerShell 找到已安装的 Plugin：
 
+脚本提示使用英文，以兼容 Windows PowerShell 5.1 的默认脚本编码，避免中文显示乱码。
+
 ```powershell
 $TuziPlugin = (codex plugin list --json | ConvertFrom-Json).installed | Where-Object pluginId -eq "tuzi-image@tuzi" | Select-Object -First 1
 ```

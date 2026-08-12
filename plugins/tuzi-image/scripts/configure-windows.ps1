@@ -11,8 +11,8 @@ $credentialPath = Join-Path $configRoot "credential-$Channel.dpapi"
 $configPath = Join-Path $configRoot "config.json"
 New-Item -ItemType Directory -Path $configRoot -Force | Out-Null
 
-$secret = Read-Host "请输入 $Channel 通道 API Key（输入不会显示）" -AsSecureString
-if ($secret.Length -eq 0) { throw "API Key 不能为空" }
+$secret = Read-Host "Enter the $Channel channel API Key (input is hidden)" -AsSecureString
+if ($secret.Length -eq 0) { throw "API Key cannot be empty" }
 $encrypted = ConvertFrom-SecureString $secret
 [IO.File]::WriteAllText($credentialPath, $encrypted + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
 
@@ -33,5 +33,5 @@ if (Test-Path -LiteralPath $configPath) {
 $config = [ordered]@{ channel = $Channel; outputDir = $outputDir }
 [IO.File]::WriteAllText($configPath, ($config | ConvertTo-Json) + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
 
-Write-Host "凭据已使用当前 Windows 用户的 DPAPI 加密保存。"
-Write-Host "已选择 $Channel 通道。请完全退出并重新打开 Codex。"
+Write-Host "The credential was encrypted with DPAPI for the current Windows user."
+Write-Host "Channel '$Channel' is selected. Fully exit and reopen Codex."
